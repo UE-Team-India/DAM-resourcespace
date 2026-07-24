@@ -1300,7 +1300,7 @@ $lang["setup-visitwiki"] = 'Visit the <a target="_blank" href="https://www.resou
 $lang["php-config-file"] = "PHP config: '%phpinifile'"; # %phpinifile will be replaced, e.g. PHP config: '/etc/php5/apache2/php.ini'
 $lang["setup-checkconfigwrite"] = "Write access to config directory:";
 $lang["setup-checkstoragewrite"] = "Write access to storage directory:";
-$lang["setup-welcome"] = "Welcome to ResourceSpace";
+$lang["setup-welcome"] = "Welcome to DAM";
 $lang["setup-introtext"] = "This configuration script will help you setup ResourceSpace.  This process only needs to be completed once. Required items are marked with a <strong>*</strong>";
 $lang["setup-checkerrors"] = "Pre-configuration errors were detected.<br />  Please resolve these errors and return to this page to continue.";
 $lang["setup-errorheader"] = "There were errors detected in your configuration.  See below for detailed error messages.";
@@ -2562,7 +2562,7 @@ $lang["help__introtext"] = '<p>Get the most out of ResourceSpace. The Knowledge 
 $lang["home__restrictedtext"] = "Please click on the link that you were e-mailed to access the resources selected for you.";
 $lang["home__restrictedtitle"] = "Welcome to ResourceSpace [ver]";
 $lang["home__welcometext"] = "The leading open source enterprise digital asset management system.";
-$lang["home__welcometitle"] = "Welcome to ResourceSpace [ver]";
+$lang["home__welcometitle"] = "Welcome to ResourceSpace Fujita [ver]";
 $lang["login__welcomelogin"] = "Welcome to ResourceSpace. Please log in.";
 $lang["local_tz"] = "Local time zone";
 $lang["research_request__introtext"] = "Our professional researchers are here to assist you in finding the very best resources for your projects. Complete this form as thoroughly as possible so we're able to meet your criteria accurately. <br /><br />A member of the research team will be assigned to your request. We'll keep in contact via email throughout the process, and once we've completed the research you'll receive an email with a link to all the resources that we recommend.  ";

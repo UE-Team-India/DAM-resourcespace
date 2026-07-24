@@ -631,7 +631,13 @@ if ($k!="" && !$internal_share_access) {$edit_access=0;}
                         else
                             {
                             // Standard previews START
+                            $supported_3d_preview_extensions = ['obj', 'fbx', 'gltf', 'glb'];
                             if (
+                                in_array(strtolower((string) $resource['file_extension']), $supported_3d_preview_extensions, true)
+                                && !resource_has_access_denied_by_RT_size($resource['resource_type'], $hide_real_filepath ? 'videojs' : '')
+                            ) {
+                                include "3d_model_player.php";
+                            } elseif (
                                 (in_array((string)$resource["file_extension"], $ffmpeg_supported_extensions)
                                 || ($ffmpeg_preview_gif && strtolower((string)$resource["file_extension"]) === 'gif'))
                                 &&
