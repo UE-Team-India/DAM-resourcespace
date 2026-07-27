@@ -3704,6 +3704,43 @@ function render_clear_selected_btn()
 
 
 /**
+* Renders the "Delete selected resources" button for the selection collection.
+*
+* The resources are moved to the configured deletion state, or deleted permanently
+* when no deletion state is configured.
+*
+* @return void
+*/
+function render_delete_selected_btn()
+    {
+    global $lang, $USER_SELECTION_COLLECTION;
+
+    if (
+        checkperm("D")
+        || !allow_multi_edit($USER_SELECTION_COLLECTION)
+        || !collection_writeable($USER_SELECTION_COLLECTION)
+        || count(get_collection_resources($USER_SELECTION_COLLECTION)) === 0
+    ) {
+        return;
+    }
+
+    $attributes  = " id=\"DeleteSelectedResourcesBtn\" class=\"DeleteSelectedButton\"";
+    $attributes .= " onclick=\"return DeleteSelectedResources(this);\"";
+    $attributes .= " data-collection=\"" . (int) $USER_SELECTION_COLLECTION . "\"";
+    $attributes .= " data-confirm=\"" . escape($lang["deleteallselectedsure"]) . "\"";
+    $attributes .= " data-error-title=\"" . escape($lang["error"]) . "\"";
+    $attributes .= " data-error-message=\"" . escape($lang["error-editpermissiondenied"]) . "\"";
+    $attributes .= generate_csrf_data_for_api_native_authmode("delete_resources_in_collection");
+
+    render_filter_bar_button(
+        $lang["deleteselectedfromcollection"],
+        $attributes,
+        '<i class="icon-trash-2" aria-hidden="true"></i>&nbsp;'
+    );
+    }
+
+
+/**
 * Render the actions specific to when a user selected resources (using the special "COLLECTION_TYPE_SELECTION" collection)
 * 
 * @return void

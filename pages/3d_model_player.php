@@ -148,10 +148,6 @@ $three_library_url = $baseurl_short . 'lib/three-r128/';
         }
 
         function loadViewerLibraries() {
-            if (window.ResourceSpaceThreeR128Ready) {
-                return window.ResourceSpaceThreeR128Ready;
-            }
-
             const libraries = [
                 'three.min.js',
                 'libs/fflate.min.js',
@@ -162,18 +158,49 @@ $three_library_url = $baseurl_short . 'lib/three-r128/';
                 'loaders/FBXLoader.js'
             ];
 
-            window.ResourceSpaceThreeR128Ready = libraries.reduce(
-                (promise, library) => promise.then(() => loadScript(threeLibraryUrl + library)),
-                Promise.resolve()
+            const viewerReady = () => (
+                window.THREE
+                && window.THREE.OrbitControls
+                && window.THREE.RGBELoader
+                && window.THREE.OBJLoader
+                && window.THREE.GLTFLoader
+                && window.THREE.FBXLoader
             );
 
-            return window.ResourceSpaceThreeR128Ready;
+            if (viewerReady()) {
+                return Promise.resolve();
+            }
+
+            // Other pages can preload a subset of the Three.js files. Always extend that
+            // shared load, rather than assuming it contains the viewer's full dependency set.
+            if (!window.ResourceSpaceThreeR128ViewerReady) {
+                const existingLoad = window.ResourceSpaceThreeR128Ready;
+                const waitForExistingLoad = (
+                    existingLoad && typeof existingLoad.then === 'function'
+                        ? existingLoad.catch(() => undefined)
+                        : Promise.resolve()
+                );
+
+                window.ResourceSpaceThreeR128ViewerReady = waitForExistingLoad
+                    .then(() => libraries.reduce(
+                        (promise, library) => promise.then(() => loadScript(threeLibraryUrl + library)),
+                        Promise.resolve()
+                    ))
+                    .then(() => {
+                        if (!viewerReady()) {
+                            throw new Error('The local 3D viewer libraries did not initialise correctly');
+                        }
+                    });
+                window.ResourceSpaceThreeR128Ready = window.ResourceSpaceThreeR128ViewerReady;
+            }
+
+            return window.ResourceSpaceThreeR128ViewerReady;
         }
 
         loadViewerLibraries()
             .then(() => {
                 const THREE = window.THREE;
-                if (!THREE || !THREE.OrbitControls || !THREE.OBJLoader || !THREE.GLTFLoader || !THREE.FBXLoader) {
+                if (!THREE || !THREE.OrbitControls || !THREE.RGBELoader || !THREE.OBJLoader || !THREE.GLTFLoader || !THREE.FBXLoader) {
                     throw new Error('The local 3D viewer libraries did not initialise correctly');
                 }
 

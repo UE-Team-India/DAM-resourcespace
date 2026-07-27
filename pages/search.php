@@ -1342,6 +1342,7 @@ if (!hook("replacesearchheader")) # Always show search header now.
             if($use_selection_collection && $selection_collection_resources_count > 0)
                 {
                 render_edit_selected_btn();
+                render_delete_selected_btn();
                 render_clear_selected_btn();
                 }
             }

@@ -336,6 +336,52 @@ function ClearSelectionCollection(t)
     }
 
 
+function DeleteSelectedResources(t)
+    {
+    var button = jQuery(t);
+
+    if(!confirm(button.data("confirm")))
+        {
+        return false;
+        }
+
+    var csrf_data = {};
+    try
+        {
+        csrf_data = JSON.parse(button.attr("data-api-native-csrf") || "{}");
+        }
+    catch(error)
+        {
+        console.error("DeleteSelectedResources: unable to read CSRF token", error);
+        styledalert(button.data("error-title"), button.data("error-message"));
+        return false;
+        }
+
+    api(
+        "delete_resources_in_collection",
+        {"collection": button.data("collection")},
+        function(response)
+            {
+            if(response)
+                {
+                CentralSpaceLoad(window.location.href, null, null, false);
+                }
+            else
+                {
+                styledalert(button.data("error-title"), button.data("error-message"));
+                }
+            },
+        csrf_data,
+        {
+            onStart: CentralSpaceShowProcessing,
+            onEnd: CentralSpaceHideProcessing
+        }
+    );
+
+    return false;
+    }
+
+
 function UpdateSelColSearchFilterBar()
     {
     console.log('Called UpdateSelColSearchFilterBar()');
@@ -454,6 +500,7 @@ function UpdateSelectedBtns(clear)
     if(clear)
         {
         jQuery("#EditSelectedResourcesBtn").parent().remove();
+        jQuery("#DeleteSelectedResourcesBtn").parent().remove();
         jQuery("#ClearSelectedResourcesBtn").parent().remove();
         return;
         }
@@ -478,14 +525,29 @@ function UpdateSelectedBtns(clear)
         dataType: "html"
         });
 
-    jQuery.when(EditBtn_ajax, ClearBtn_ajax)
-        .then(function(edit_btn_response, clear_btn_response)
+    var DeleteBtn_ajax = jQuery.ajax({
+        type: 'GET',
+        url: baseurl + "/pages/ajax/collections.php",
+        data: {
+            action: "render_delete_selected_btn"
+        },
+        dataType: "html"
+        });
+
+    jQuery.when(EditBtn_ajax, DeleteBtn_ajax, ClearBtn_ajax)
+        .then(function(edit_btn_response, delete_btn_response, clear_btn_response)
             {
             var TopInpageNavLeft = jQuery(".TopInpageNavLeft");
             var btn = jQuery("#EditSelectedResourcesBtn");
             if(!btn.length)
                 {
                 TopInpageNavLeft.append(edit_btn_response[0]);
+                }
+
+            var btn = jQuery("#DeleteSelectedResourcesBtn");
+            if(!btn.length)
+                {
+                TopInpageNavLeft.append(delete_btn_response[0]);
                 }
 
             var btn = jQuery("#ClearSelectedResourcesBtn");

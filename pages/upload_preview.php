@@ -29,6 +29,31 @@ if ($resource["lock_user"] > 0 && $resource["lock_user"] != $userref) {
     exit($error);
 }
 
+$supported_3d_thumbnail_extensions = ['obj', 'fbx', 'gltf', 'glb'];
+$is_3d_thumbnail_resource = (
+    in_array(strtolower((string) $resource['file_extension']), $supported_3d_thumbnail_extensions, true)
+    && can_upload_preview_image((int) $ref)
+);
+
+if ($is_3d_thumbnail_resource) {
+    $three_d_thumbnail_model_url = get_resource_path(
+        $ref,
+        false,
+        '',
+        false,
+        $resource['file_extension'],
+        true,
+        1,
+        false,
+        '',
+        -1,
+        true
+    );
+    $three_d_thumbnail_csrf_token = generateCSRFToken($usersession, 'upload_3d_thumbnail');
+    // This page already has its own manual JPEG upload form below.
+    $three_d_thumbnail_show_upload_fallback = false;
+}
+
 # fetch the current search
 $search = getval("search", "");
 $order_by = getval("order_by", "relevance");
@@ -105,6 +130,12 @@ include "../include/header.php";
     </h1>
 
     <p><?php echo escape(text("introtext")); ?></p>
+
+    <?php
+    if ($is_3d_thumbnail_resource) {
+        include 'edit_3d_thumbnail.php';
+    }
+    ?>
 
     <script language="JavaScript">
         // Check allowed extensions:

@@ -536,6 +536,33 @@ if (getval("regenexif","")!="" && enforcePostRequest($ajax)) {
 $is_template=(isset($metadata_template_resource_type) && $resource["resource_type"]==$metadata_template_resource_type);
 debug(sprintf('$is_template = %s', json_encode($is_template)));
 
+// A 3D model preview is rendered in the browser and saved as the resource thumbnail.
+// This is available on all single-resource metadata edit pages where a resource file exists.
+$supported_3d_thumbnail_extensions = ['obj', 'fbx', 'gltf', 'glb'];
+$is_3d_thumbnail_resource = (
+    !$multiple
+    && $ref > 0
+    && in_array(strtolower((string) $resource['file_extension']), $supported_3d_thumbnail_extensions, true)
+    && can_upload_preview_image((int) $ref)
+);
+
+if ($is_3d_thumbnail_resource) {
+    $three_d_thumbnail_model_url = get_resource_path(
+        $ref,
+        false,
+        '',
+        false,
+        $resource['file_extension'],
+        true,
+        1,
+        false,
+        '',
+        -1,
+        true
+    );
+    $three_d_thumbnail_csrf_token = generateCSRFToken($usersession, 'upload_3d_thumbnail');
+}
+
 # If config option $blank_edit_template is set and form has not yet been submitted, blank the form for user edit templates.
 if(0 > $ref && $blank_edit_template && '' == getval('submitted', ''))
     {
@@ -2045,6 +2072,12 @@ foreach($fields as $n => $field)
     if(in_array($field['resource_type_field'], $edit_valid_fields))
         {
         display_field($n, $field, $newtab, $modal); 
+
+        // Show thumbnail controls next to the configured Title field for 3D models.
+        if ($is_3d_thumbnail_resource && (int) $field['ref'] === (int) $view_title_field)
+            {
+            include 'edit_3d_thumbnail.php';
+            }
         }
     }
 

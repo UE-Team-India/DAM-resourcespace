@@ -19,6 +19,7 @@ $allowed_actions = array(
     "render_selected_resources_counter",
     "render_edit_selected_btn",
     "render_clear_selected_btn",
+    "render_delete_selected_btn",
     "remove_selected_from_collection",
     );
 
@@ -60,6 +61,11 @@ if ($action == "render_selected_resources_counter") {
 
 if ($action == "render_clear_selected_btn") {
     ajax_send_text_response(200, cast_echo_to_string('render_clear_selected_btn'));
+}
+
+if ($action == "render_delete_selected_btn") {
+    include_once "{$rsroot}/include/do_search.php";
+    ajax_send_text_response(200, cast_echo_to_string('render_delete_selected_btn'));
 }
 
 if ($action == "render_edit_selected_btn") {
